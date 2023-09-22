@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -12,20 +13,26 @@ import (
 )
 
 type Challenge struct {
-	Build   string `yaml:build`
-	Timeout int    `yaml:timeout`
+	Build   string `yaml:"build"`
+	Timeout int    `yaml:"timeout"`
 }
 
 type T struct {
-	Title      string      `yaml:title`
-	Site_Token string      `yaml:site_token`
-	Challenges []Challenge `yaml:challenges`
+	Title      string               `yaml:"title"`
+	Site_Token string               `yaml:"site_token"`
+	Challenges map[string]Challenge `yaml:"challenges"`
 }
 
 func main() {
-	
+	config, err := os.ReadFile("config.yml")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	t := T{}
-	err := yaml.Unmarshal([]byte(data), &t)
+	err = yaml.Unmarshal([]byte(config), &t)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	fmt.Println("Welcome to ")
 	fmt.Print("Input Access_Token: ")
 	reader := bufio.NewReader(os.Stdin)
