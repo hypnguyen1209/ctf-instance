@@ -3,12 +3,21 @@
 DIR=$1
 ID=$2
 PORT=$3
-NEWDOCKERCOMPOSE="$2_docker-compose.yml"
+TIMEOUT=$4'm'
+NAME=$5
 
-cp $DIR/docker-compose.yml $DIR/$NEWDOCKERCOMPOSE
+NEW_DOCKERCOMPOSE="$2_docker-compose.yml"
 
-sed -i 's/{{PORT}}/'$PORT'/g' $DIR/$NEWDOCKERCOMPOSE
+PATH_INSTANCE=$DIR/$NEW_DOCKERCOMPOSE
 
-sed -i 's/{{ID}}/'$ID'/g' $DIR/$NEWDOCKERCOMPOSE
+cp $DIR/docker-compose.yml $PATH_INSTANCE
 
-docker-compose -p 
+sed -i 's/{{PORT}}/'$PORT'/g' $PATH_INSTANCE
+
+sed -i 's/{{ID}}/'$ID'/g' $PATH_INSTANCE
+
+docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE up -d
+
+sleep $TIMEOUT
+
+docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE down

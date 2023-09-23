@@ -6,10 +6,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-resty/resty/v2"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/tidwall/gjson"
 	"gopkg.in/yaml.v3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type Challenge struct {
@@ -28,6 +32,15 @@ type User struct {
 	Score int32  `json:"score"`
 	Id    int    `json:"id"`
 	Name  string `json:"name"`
+}
+
+type Instances struct {
+	gorm.Model
+	Id            int       `gorm:"primaryKey"`
+	UserId        int       `json:"user_id"`
+	ChallengeName string    `json:"challenge_name"`
+	Port          int       `json:"port"`
+	Timestamp     time.Time `json:"timestamp"`
 }
 
 var (
@@ -58,12 +71,16 @@ func main() {
 		log.Fatalln(err)
 	}
 	fmt.Println("Hello,", user.Name, fmt.Sprintf("(score: %d)", user.Score))
+
 	fmt.Println("List of challenges:")
+	listChallenge := make([]string, len(t.Challenges))
 	index := 1
 	for name := range t.Challenges {
+		listChallenge = append(listChallenge, name)
 		fmt.Printf("	%d. %s\n", index, name)
 		index++
 	}
+
 	fmt.Printf("Press the target challenge [1,..%d]: ", len(t.Challenges))
 	var inputChallenge int
 	fmt.Scanf("%d", &inputChallenge)
@@ -71,9 +88,18 @@ func main() {
 		log.Fatalln("Target invalid")
 	}
 	fmt.Println("Waiting for start....")
-	
+	db, err := gorm.Open(sqlite.Open("sql.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.AutoMigrate(&Instances{})
+	check_open_challenge(db, listChallenge[inputChallenge-1], user.Id)
+
 }
 
+func check_open_challenge(db *gorm.DB, challenge_name string, user_id int) {
+
+}
 func check_token(token string) (string, error) {
 	client := resty.New()
 	resp, err := client.R().

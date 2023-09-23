@@ -2,7 +2,7 @@ version: '3'
 
 services:
   you_a_good_admin:
-    container_name: 2_you_a_good_admin
+    container_name: 4_you_a_good_admin
     image: webdevops/php-nginx:8.1-alpine
     ports:
-      - 10902:80
+      - 10904:80
