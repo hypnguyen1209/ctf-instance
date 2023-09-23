@@ -70,6 +70,7 @@ func main() {
 	if inputChallenge > len(t.Challenges) {
 		log.Fatalln("Target invalid")
 	}
+	fmt.Println("Waiting for start....")
 	
 }
 

@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  you_a_good_admin:
+    container_name: {{ID}}_you_a_good_admin
+    image: webdevops/php-nginx:8.1-alpine
+    ports:
+      - {{PORT}}:80
