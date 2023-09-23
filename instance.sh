@@ -18,6 +18,4 @@ sed -i 's/{{ID}}/'$ID'/g' $PATH_INSTANCE
 
 docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE up -d
 
-sleep $TIMEOUT
-
-docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE down
+(sleep $TIMEOUT && docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE down 2>&1 &)
