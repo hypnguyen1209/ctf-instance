@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/tidwall/gjson"
@@ -23,36 +23,70 @@ type T struct {
 	Challenges map[string]Challenge `yaml:"challenges"`
 }
 
+type User struct {
+	Email string `json:"email"`
+	Score int32  `json:"score"`
+	Id    int    `json:"id"`
+	Name  string `json:"name"`
+}
+
+var (
+	t = T{}
+)
+
 func main() {
 	config, err := os.ReadFile("config.yml")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	t := T{}
 	err = yaml.Unmarshal([]byte(config), &t)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("Welcome to ")
+	fmt.Println("Welcome to", t.Title)
+	fmt.Println("==============================================")
 	fmt.Print("Input Access_Token: ")
-	reader := bufio.NewReader(os.Stdin)
-	text, _ := reader.ReadString('\n') // convert CRLF to LF
-	text = strings.Replace(text, "\n", "", -1)
-	fmt.Println(text)
+	var inputToken string
+	fmt.Scanf("%s", &inputToken)
+	resp, err := check_token(inputToken)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	user := User{}
+	err = json.Unmarshal([]byte(resp), &user)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println("Hello,", user.Name, fmt.Sprintf("(score: %d)", user.Score))
+	fmt.Println("List of challenges:")
+	index := 1
+	for name := range t.Challenges {
+		fmt.Printf("	%d. %s\n", index, name)
+		index++
+	}
+	fmt.Printf("Press the target challenge [1,..%d]: ", len(t.Challenges))
+	var inputChallenge int
+	fmt.Scanf("%d", &inputChallenge)
+	if inputChallenge > len(t.Challenges) {
+		log.Fatalln("Target invalid")
+	}
+	
 }
 
 func check_token(token string) (string, error) {
 	client := resty.New()
-
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
-		SetAuthToken("ctfd_92233962e4dc146288edf8602fa5d42790b1f172f275ed63fb253289f44fd636").
-		Get("http://ctf.actvn.edu.vn/api/v1/users/me")
+		SetAuthToken(token).
+		Get(t.Site_Token + "/api/v1/users/me")
 	if err != nil {
 		fmt.Println("Err:", err)
 		return "", err
 	}
 	isSuccess := gjson.Get(resp.String(), "success")
-	fmt.Println(isSuccess.String())
-	return "", nil
+	if isSuccess.Bool() {
+		dataResp := gjson.Get(resp.String(), "data")
+		return dataResp.String(), nil
+	}
+	return "", errors.New(gjson.Get(resp.String(), "message").String())
 }

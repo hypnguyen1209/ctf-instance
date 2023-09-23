@@ -1,6 +1,6 @@
 title: 'KMACTF 2023_3'
 
-site_token: 'http://ctf.actvn.edu.vn'
+site_token: 'https://ctf.actvn.edu.vn'
 
 challenges:
   you_a_good_admin:
