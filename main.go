@@ -164,7 +164,7 @@ func main() {
 				challengeName)
 			cmd.Start()
 			time.Sleep(5 * time.Second)
-			fmt.Printf("Challenge: http://%s:%d\n", ip, port)
+			fmt.Printf("Challenge URL: http://%s:%d\nOr connect by socket: nc %s %d\n", ip, port, ip, port)
 			fmt.Println("Time to close:", timeout, "minutes")
 			time.Sleep(time.Duration(timeout) * time.Minute)
 			fmt.Println("Ended")
@@ -172,7 +172,7 @@ func main() {
 		}
 	}
 	if time.Now().Unix()-instanceOpen.CreatedAt.Unix() < int64(t.Challenges[challengeName].Timeout*60) {
-		fmt.Printf("Challenge: http://%s:%d\n", ip, instanceOpen.Port)
+		fmt.Printf("Challenge: http://%s:%d\nOr connect by socket: nc %s %d\n", ip, instanceOpen.Port, ip, instanceOpen.Port)
 		timeout := float64(int64(t.Challenges[challengeName].Timeout*60)-time.Now().Unix()+instanceOpen.CreatedAt.Unix()) / 60
 		fmt.Println("Time to close:", fmt.Sprintf("%.2f", timeout), "minutes")
 		time.Sleep(time.Duration(timeout) * time.Minute)
@@ -199,7 +199,7 @@ func main() {
 					challengeName)
 				cmd.Start()
 				time.Sleep(5 * time.Second)
-				fmt.Printf("Challenge: http://%s:%d\n", ip, port)
+				fmt.Printf("Challenge URL: http://%s:%d\nOr connect by socket: nc %s %d\n", ip, port, ip, port)
 				fmt.Println("Time to close:", timeout, "minutes")
 				time.Sleep(time.Duration(timeout) * time.Minute)
 				fmt.Println("Ended")
