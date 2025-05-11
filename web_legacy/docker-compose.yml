@@ -1,0 +1,6 @@
+services:
+  legacy:
+    container_name: legacy_{{ID}}
+    image: webdevops/php-nginx:8.1-alpine
+    ports:
+      - {{PORT}}:80

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if command -v docker-compose &> /dev/null; then
+	DOCKER_COMPOSE="docker-compose"
+else
+	DOCKER_COMPOSE="docker compose"
+fi
+
 DIR=$1
 ID=$2
 PORT=$3
@@ -16,6 +22,6 @@ sed -i 's/{{PORT}}/'$PORT'/g' $PATH_INSTANCE
 
 sed -i 's/{{ID}}/'$ID'/g' $PATH_INSTANCE
 
-docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE up -d
+$DOCKER_COMPOSE -p $ID'_'$NAME -f $PATH_INSTANCE up -d
 
-(sleep $TIMEOUT && docker-compose -p $ID'_'$NAME -f $PATH_INSTANCE down 2>&1 &)
+(sleep $TIMEOUT && $DOCKER_COMPOSE -p $ID'_'$NAME -f $PATH_INSTANCE down 2>&1 &)
