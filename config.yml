@@ -1,11 +1,11 @@
-title: 'KMACTF 2023_3'
+title: 'KMACTF 2025'
 
 site_token: 'https://ctf.actvn.edu.vn'
 
 challenges:
-  you_a_good_admin:
-    build: ./you_a_good_admin
+  eznote:
+    build: ./web_eznote
     timeout: 5
-  ppp:
-    build: ./build
+  legacy:
+    build: ./web_legacy
     timeout: 5
